@@ -2,6 +2,15 @@ package org.magnum.mobilecloud.video.repository;
 
 import com.google.common.base.Objects;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
 /**
  * A simple object to represent a video and its URL for viewing.
  * 
@@ -16,14 +25,20 @@ import com.google.common.base.Objects;
  * 
  * @author mitchell
  */
+@Entity
 public class Video {
 
+	@Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
 	private long id;
 
 	private String name;
 	private String url;
 	private long duration;
 	private long likes;
+
+	@ElementCollection
+	private Set<String> likeUsers = new HashSet<String>();
 	
 	public Video() {
 	}
@@ -34,6 +49,24 @@ public class Video {
 		this.url = url;
 		this.duration = duration;
 		this.likes = likes;
+	}
+
+	public boolean like(String user) {
+		if (likeUsers.add(user)) {
+			likes++;
+			return true;
+		}
+		return false;
+	}
+
+	public void unlike(String user) {
+		if (likeUsers.remove(user)) {
+			likes--;
+		}
+	}
+
+	public Set<String> getLikeUsers() {
+		return likeUsers;
 	}
 
 	public String getName() {
